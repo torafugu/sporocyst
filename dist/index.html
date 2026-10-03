@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SPOROCYST — 宿主体内生存シミュレーション</title>
+  <meta name="description" content="貝の体内でクローン群体を育て、免疫と超寄生をかわしながらセルカリアを次の宿主へ送り出す短編生態シミュレーション。">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23061016'/%3E%3Cpath d='M14 34c8-18 30-20 38-5-8 18-30 20-38 5Z' fill='none' stroke='%237de5bf' stroke-width='5'/%3E%3Ccircle cx='35' cy='30' r='5' fill='%23ffcf67'/%3E%3C/svg%3E">
+  <style>
+    :root{--ink:#eaf6f2;--muted:#8fa8a4;--bg:#061016;--panel:#0c1b22;--line:#21404a;--mint:#7de5bf;--amber:#ffcf67;--coral:#ff806f;--cyan:#74c9e8}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 28% 15%,#123039 0,#061016 38%,#04090d 100%);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;min-height:100vh}
+    button{font:inherit;color:inherit} .shell{width:min(1180px,100%);margin:auto;padding:20px}.top{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px}.brand{display:flex;align-items:baseline;gap:12px}.brand b{font-size:1.35rem;letter-spacing:.18em}.brand span,.day{color:var(--muted);font-size:.84rem}.day strong{color:var(--amber);font-size:1rem}
+    .meters{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}.meter{background:#0b1a20cc;border:1px solid var(--line);padding:10px 12px;border-radius:8px}.meter label{display:flex;justify-content:space-between;color:var(--muted);font-size:.76rem;letter-spacing:.05em}.meter strong{font-size:1.12rem;color:var(--ink)}.bar{height:4px;background:#193039;margin-top:7px;border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--mint);transition:width .35s}
+    .game{display:grid;grid-template-columns:1.55fr .9fr;gap:12px}.world,.side{background:linear-gradient(145deg,#0c1b22e8,#081319e8);border:1px solid var(--line);border-radius:10px;box-shadow:0 18px 50px #0008}.world{position:relative;min-height:520px;overflow:hidden}.world-head{position:absolute;z-index:3;left:18px;top:14px}.world-head b{display:block}.world-head small{color:var(--muted)}
+    canvas{width:100%;height:100%;position:absolute;inset:0}.legend{position:absolute;left:16px;bottom:14px;display:flex;gap:14px;color:var(--muted);font-size:.72rem}.legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}.side{padding:16px;display:flex;flex-direction:column;gap:14px}.brief h1{font-size:1.2rem;margin:0 0 5px}.brief p{color:var(--muted);font-size:.86rem;margin:0}.actions{display:grid;gap:8px}.action{border:1px solid var(--line);background:#0e242c;padding:11px 12px;border-radius:7px;text-align:left;cursor:pointer;transition:.18s}.action:hover,.action:focus-visible{border-color:var(--mint);transform:translateY(-1px);outline:none}.action b{display:flex;justify-content:space-between;font-size:.9rem}.action small{display:block;color:var(--muted);margin-top:3px}.action em{color:var(--amber);font-style:normal;font-weight:500}.release{background:var(--mint);color:#06150f;border:0;border-radius:7px;padding:12px;font-weight:800;cursor:pointer}.release:disabled{background:#17342f;color:#64847c;cursor:not-allowed}
+    .log{border-top:1px solid var(--line);padding-top:12px;min-height:145px}.log h2{font-size:.75rem;color:var(--muted);letter-spacing:.12em;margin:0 0 8px}.entry{font-size:.8rem;padding:6px 0;border-bottom:1px solid #173039}.entry time{color:var(--cyan);margin-right:7px}.entry.new{animation:flash 1s}@keyframes flash{from{color:var(--amber)}to{color:inherit}}
+    .modal{position:fixed;inset:0;background:#02070bd9;display:none;place-items:center;padding:22px;z-index:10}.modal.show{display:grid}.card{width:min(520px,100%);background:#0d2028;border:1px solid #35606b;border-radius:12px;padding:24px;box-shadow:0 30px 80px #000}.card .eyebrow{color:var(--coral);font-size:.75rem;letter-spacing:.14em}.card h2{margin:6px 0 8px}.card p{color:#b3c7c2}.choices{display:grid;gap:8px;margin-top:18px}.choices button{background:#132a32;border:1px solid var(--line);border-radius:7px;padding:12px;text-align:left;cursor:pointer}.choices button:hover{border-color:var(--amber)}.result{text-align:center}.result .score{font-size:3rem;color:var(--amber);margin:5px}.restart{background:var(--mint)!important;color:#06150f;text-align:center!important;font-weight:800}
+    .help{margin-top:12px;color:#6f8d88;font-size:.72rem;text-align:center}
+    @media(max-width:760px){.shell{padding:12px}.top{align-items:flex-start}.brand{display:block}.brand span{display:block}.meters{grid-template-columns:repeat(2,1fr)}.meter:last-child{grid-column:span 2}.game{grid-template-columns:1fr}.world{min-height:390px}.side{padding:13px}.help{display:none}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top"><div class="brand"><b>SPOROCYST</b><span>宿主体内生存シミュレーション</span></div><div class="day">侵入後 <strong id="day">1</strong> / 18日</div></header>
+    <section class="meters" aria-label="群体の状態">
+      <div class="meter"><label>宿主の健康 <strong id="health">82</strong></label><div class="bar"><i id="healthBar"></i></div></div>
+      <div class="meter"><label>利用可能な栄養 <strong id="energy">16</strong></label><div class="bar"><i id="energyBar"></i></div></div>
+      <div class="meter"><label>娘スポロシスト <strong id="colony">3</strong></label><div class="bar"><i id="colonyBar"></i></div></div>
+      <div class="meter"><label>セルカリア <strong id="cercariae">0</strong></label><div class="bar"><i id="cercariaeBar"></i></div></div>
+      <div class="meter"><label>免疫警戒 <strong id="immune">18</strong></label><div class="bar"><i id="immuneBar"></i></div></div>
+    </section>
+    <section class="game">
+      <div class="world">
+        <div class="world-head"><b>腹足類・消化腺領域</b><small>母スポロシスト由来のクローン群体</small></div>
+        <canvas id="world" aria-label="貝の体内に広がるスポロシスト群体の模式図"></canvas>
+        <div class="legend"><span><i style="background:#7de5bf"></i>スポロシスト</span><span><i style="background:#ffcf67"></i>セルカリア</span><span><i style="background:#ff806f"></i>免疫反応</span></div>
+      </div>
+      <aside class="side">
+        <div class="brief"><h1 id="phaseTitle">群体を定着させる</h1><p id="phaseText">宿主を殺さず、次世代を生産できる領域を確保してください。毎日ひとつの戦略を選びます。</p></div>
+        <div class="actions">
+          <button class="action" data-action="expand"><b>娘群体を増やす <em>栄養 −6</em></b><small>生産力を上げるが、宿主と免疫への負担が増える</small></button>
+          <button class="action" data-action="produce"><b>セルカリアを形成 <em>栄養 −5</em></b><small>群体規模に応じて、遊泳幼生を生産する</small></button>
+          <button class="action" data-action="hide"><b>外皮を調整する <em>栄養 −3</em></b><small>増殖を休み、免疫警戒を下げて宿主を回復させる</small></button>
+        </div>
+        <button id="release" class="release" disabled>放出にはセルカリアが20必要</button>
+        <div class="log"><h2>観察記録</h2><div id="entries" aria-live="polite"></div></div>
+      </aside>
+    </section>
+    <p class="help">目的：18日以内にセルカリアを20以上形成し、宿主が生きている間に放出する。数値はゲーム用の仮想モデルです。</p>
+  </main>
+  <div class="modal" id="eventModal" role="dialog" aria-modal="true" aria-labelledby="eventTitle"><div class="card"><div class="eyebrow">未知の生物反応</div><h2 id="eventTitle">超寄生者を検出</h2><p id="eventText"></p><div class="choices" id="choices"></div></div></div>
+  <div class="modal" id="resultModal" role="dialog" aria-modal="true"><div class="card result"><div class="eyebrow">生活環レポート</div><h2 id="resultTitle"></h2><div class="score" id="score"></div><p id="resultText"></p><div class="choices"><button class="restart" id="restart">新しい群体で試す</button></div></div></div>
+  <script>
+    const initial={day:1,health:82,energy:16,colony:3,cercariae:0,immune:18,parasite:0,ended:false}; let s={...initial};
+    const $=id=>document.getElementById(id), entries=$('entries'), canvas=$('world'),ctx=canvas.getContext('2d'); let motes=[];
+    function log(text){const e=document.createElement('div');e.className='entry new';e.innerHTML=`<time>DAY ${s.day}</time>${text}`;entries.prepend(e);while(entries.children.length>4)entries.lastChild.remove()}
+    function clamp(v,a=0,b=100){return Math.max(a,Math.min(b,v))}
+    function update(){['health','energy','colony','cercariae','immune'].forEach(k=>{$(k).textContent=Math.round(s[k]);$(k+'Bar').style.width=clamp(s[k],0,k==='colony'?40:k==='cercariae'?50:100)/(k==='colony'?40:k==='cercariae'?50:100)*100+'%'});$('day').textContent=s.day;const ready=s.cercariae>=20&&!s.ended;$('release').disabled=!ready;$('release').textContent=ready?'セルカリアを水中へ放出する':`放出にはセルカリアが${Math.max(0,20-Math.floor(s.cercariae))}必要`;document.querySelectorAll('.action').forEach(b=>b.disabled=s.ended);syncMotes()}
+    function act(type){if(s.ended)return;const costs={expand:6,produce:5,hide:3};if(s.energy<costs[type]){log('栄養が不足している。宿主からの供給を待つ');advance(true);return} s.energy-=costs[type];
+      if(type==='expand'){const gain=2+Math.floor(Math.random()*3);s.colony+=gain;s.health-=4+gain;s.immune+=7;log(`娘スポロシストが${gain}群定着。宿主組織への圧力が増した`)}
+      if(type==='produce'){const gain=Math.max(2,Math.floor(s.colony*.7+Math.random()*4));s.cercariae+=gain;s.health-=2;s.immune+=3;log(`${gain}個体のセルカリア原基を形成した`)}
+      if(type==='hide'){s.immune-=14;s.health+=5;log('外皮の分子構成を調整。宿主の免疫反応が弱まった')}
+      advance(false)
+    }
+    function advance(starved){s.day++;s.energy+=Math.max(4,Math.floor(s.health/18));s.health-=Math.max(0,(s.colony-5)*.38);if(s.immune>55){const loss=Math.max(1,Math.floor((s.immune-45)/16));s.colony-=loss;log(`免疫細胞の包囲により娘群体を${loss}失った`)}s.immune-=3;if(s.parasite){s.parasite++;s.energy-=2;s.cercariae=Math.max(0,s.cercariae-1)}
+      s.health=clamp(s.health);s.energy=clamp(s.energy,0,40);s.colony=clamp(s.colony,0,40);s.immune=clamp(s.immune);
+      if(!s.parasite&&s.day>=5&&s.day<=13&&Math.random()<.23)hyperEvent();else if(s.health<=0||s.colony<=0||s.day>18)finish(false);update()
+    }
+    function hyperEvent(){s.parasite=1;const m=$('eventModal');$('eventText').textContent='群体内部に未登録の胞子形成生物が侵入しました。あなたもまた、別の寄生者の宿主です。';const c=$('choices');c.innerHTML='';[
+      ['強く排除する','栄養−7／免疫警戒＋12。成功すれば除去できる。',()=>{s.energy-=7;s.immune+=12;if(Math.random()<.72){s.parasite=0;log('超寄生者を排除した')}else log('排除に失敗。胞子は群体内に残存している')}],
+      ['低密度で許容する','毎日栄養−2／セルカリア−1。免疫警戒は上がらない。',()=>log('超寄生者との不安定な共存を選んだ')]
+    ].forEach(([a,b,f])=>{const x=document.createElement('button');x.innerHTML=`<b>${a}</b><br><small>${b}</small>`;x.onclick=()=>{f();m.classList.remove('show');update()};c.appendChild(x)});m.classList.add('show')}
+    function release(){if(s.cercariae<20)return;const survival=Math.round(s.cercariae*(.12+Math.random()*.12));finish(true,survival)}
+    function finish(released,survival=0){s.ended=true;const success=released&&survival>0&&s.health>0;$('resultTitle').textContent=success?'次の宿主へ':'生活環はここで途切れた';$('score').textContent=success?`${survival} 個体`:'0 個体';$('resultText').textContent=success?`${Math.floor(s.cercariae)}個体を放出し、推定${survival}個体が次段階へ到達しました。宿主の残存健康度は${Math.round(s.health)}。個体の死ではなく、世代の連続が成功条件です。`:s.health<=0?'資源を奪いすぎて宿主が死亡し、増殖拠点も失われました。':'放出可能な世代を作る前に時間切れになりました。';$('resultModal').classList.add('show');update()}
+    function reset(){s={...initial};entries.innerHTML='';$('resultModal').classList.remove('show');log('ミラシジウムが貝へ侵入し、母スポロシストへ変態した');update()}
+    function syncMotes(){const need=Math.round(s.colony)+Math.min(22,Math.round(s.cercariae/2));while(motes.length<need)motes.push({a:Math.random()*6.28,r:.1+Math.random()*.7,z:Math.random(),kind:motes.length<s.colony?'sporo':'cerc'});while(motes.length>need)motes.pop()}
+    function draw(){const dpr=devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;if(canvas.width!==w*dpr||canvas.height!==h*dpr){canvas.width=w*dpr;canvas.height=h*dpr}ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);const cx=w*.47,cy=h*.54,rx=w*.38,ry=h*.34;ctx.fillStyle='#0b2a31';ctx.strokeStyle='#26505a';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,7);ctx.fill();ctx.stroke();ctx.strokeStyle='#163d46';for(let i=1;i<6;i++){ctx.beginPath();ctx.ellipse(cx,cy,rx*i/6,ry*i/6,.25,0,7);ctx.stroke()}const t=Date.now()/1600;motes.forEach((m,i)=>{m.a+=.0015;const x=cx+Math.cos(m.a+t*.06)*(rx*m.r)+Math.sin(t+i)*5*m.z,y=cy+Math.sin(m.a*1.4)*(ry*m.r);ctx.fillStyle=m.kind==='cerc'?'#ffcf67':'#7de5bf';ctx.globalAlpha=.45+.55*m.z;ctx.beginPath();ctx.arc(x,y,m.kind==='cerc'?2.2:4+m.z*4,0,7);ctx.fill()});if(s.immune>28){ctx.fillStyle='#ff806f';const n=Math.round(s.immune/12);for(let i=0;i<n;i++){const a=t*.25+i*2.4,x=cx+Math.cos(a)*(rx*.72),y=cy+Math.sin(a*1.3)*(ry*.72);ctx.globalAlpha=.55;ctx.beginPath();ctx.arc(x,y,5,0,7);ctx.fill()}}ctx.globalAlpha=1;requestAnimationFrame(draw)}
+    document.querySelectorAll('.action').forEach(b=>b.onclick=()=>act(b.dataset.action));$('release').onclick=release;$('restart').onclick=reset;reset();draw();
+    if(document.modelContext?.registerTool){
+      const state=()=>({day:s.day,hostHealth:Math.round(s.health),energy:Math.round(s.energy),daughterSporocysts:Math.round(s.colony),cercariae:Math.round(s.cercariae),immuneAlert:Math.round(s.immune),hyperparasitePresent:Boolean(s.parasite),canRelease:s.cercariae>=20&&!s.ended,ended:s.ended});
+      document.modelContext.registerTool({name:'read_colony_state',title:'群体の状態を読む',description:'現在のスポロシスト群体、宿主、免疫、超寄生の状態を返す。',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:false},execute:()=>state()});
+      document.modelContext.registerTool({name:'choose_colony_strategy',title:'今日の戦略を選ぶ',description:'画面のボタンと同じ一日分の戦略を実行する。',inputSchema:{type:'object',properties:{strategy:{type:'string',enum:['expand','produce','hide']}},required:['strategy'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute:({strategy})=>{if(!['expand','produce','hide'].includes(strategy))throw new Error('未知の戦略');act(strategy);return state()}});
+      document.modelContext.registerTool({name:'release_cercariae',title:'セルカリアを放出する',description:'セルカリアが20以上なら水中へ放出し、生活環の成否を判定する。',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute:()=>{if(s.cercariae<20||s.ended)throw new Error('まだ放出できない');release();return state()}});
+    }
+  </script>
+</body>
+</html>
