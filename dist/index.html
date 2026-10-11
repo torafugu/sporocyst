@@ -74,7 +74,7 @@
       if(!s.hyperDetected&&s.day>=5&&s.day<=13&&Math.random()<.23)hyperEvent();else if(s.health<=0||s.colony<=0||s.day>18)finish(false);update()
     }
     function hyperEvent(){const target=profile().sporo.sort((a,b)=>b.maturity-a.maturity)[0];if(!target)return;s.hyperDetected=true;target.infected=true;target.hyperload=.22;const m=$('eventModal');$('eventText').textContent='成熟した娘スポロシスト1個体の内部に、未登録の胞子形成生物を検出しました。紫色の胞子が増えるほど、この個体の増殖力とセルカリア形成力が低下します。';const c=$('choices');c.innerHTML='';[
-      ['感染個体から強く排除する','栄養−7／免疫警戒＋12。成功すればこの個体から除去できる。',()=>{s.energy-=7;s.immune+=12;if(Math.random()<.72){target.infected=false;target.hyperload=0;log('感染個体から超寄生胞子を排除した')}else{target.hyperload=.45;log('排除に失敗。対象個体内で胞子負荷が上昇した')}}],
+      ['感染個体から強く排除する','栄養−7／免疫警戒＋12。成功すればこの個体から除去できる。',()=>{s.energy=Math.max(0,s.energy-7);s.immune=clamp(s.immune+12);if(Math.random()<.72){target.infected=false;target.hyperload=0;log('感染個体から超寄生胞子を排除した')}else{target.hyperload=.45;log('排除に失敗。対象個体内で胞子負荷が上昇した')}}],
       ['感染個体を低密度で許容する','局所的な生産低下と個体間伝播の危険。弱った個体は宿主消費も減る。',()=>{s.tolerateHyper=true;log('感染個体を群体内に残し、低密度での共存を選んだ')}]
     ].forEach(([a,b,f])=>{const x=document.createElement('button');x.innerHTML=`<b>${a}</b><br><small>${b}</small>`;x.onclick=()=>{f();m.classList.remove('show');update()};c.appendChild(x)});m.classList.add('show')}
     function release(){if(s.cercariae<20)return;const survival=Math.round(s.cercariae*(.12+Math.random()*.12));finish(true,survival)}
