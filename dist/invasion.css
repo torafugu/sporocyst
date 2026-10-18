@@ -1,0 +1,27 @@
+.invasion{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(290px,.8fr);gap:12px;align-items:start}
+.invasion-panel{background:linear-gradient(145deg,#321d20f2,#211316f2);border:1px solid var(--line);border-radius:10px;padding:20px;box-shadow:0 18px 50px #0008;min-width:0}
+.invasion h1{margin:2px 0 5px;font-size:1.35rem}.invasion .lead{margin:0 0 16px;color:var(--muted);font-size:.88rem}
+.larvae{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 11px;margin-bottom:14px;background:#241519;border:1px solid var(--line);border-radius:7px;color:var(--muted);font-size:.78rem}.larvae strong{color:var(--amber);font-size:1rem;white-space:nowrap}
+.invade{width:100%;border:0;border-radius:7px;padding:12px;background:var(--mint);color:#152014;font-weight:800;cursor:pointer}.invade:focus-visible{outline:3px solid var(--amber);outline-offset:2px}.invade:disabled{background:#4a3c38;color:#8f7770;cursor:not-allowed}
+.attempt-history{margin-top:10px;color:var(--muted);font-size:.72rem}
+.puzzle-board{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:min(100%,490px);margin:18px auto}
+.puzzle-cell{position:relative;aspect-ratio:1;border:1px solid #805054;border-radius:10px;background:#44292e;cursor:pointer;display:grid;place-items:center;padding:3px;min-width:0;transition:background .15s}
+.puzzle-cell:focus-visible,.puzzle-tool:focus-visible,.puzzle-secondary:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.puzzle-cell:disabled{cursor:default;opacity:1}.puzzle-cell.void{visibility:hidden}
+.puzzle-cell.surface{background:#68403c;border:2px solid #b08064}.puzzle-cell.recognized{border-color:var(--amber)}
+.puzzle-cell.masked{background:#36625b}.puzzle-cell.inhibited{background:#3e426d}.puzzle-cell.attached{box-shadow:inset 0 0 0 3px var(--coral)}
+.puzzle-cell.toxic{background:#9b4439}.puzzle-cell.shielded{border-color:var(--violet)}.puzzle-cell.damaged{background:repeating-linear-gradient(135deg,#4b262b 0 8px,#783c3c 8px 12px)}
+.puzzle-cell.connected{background:#345b40;border-color:var(--mint)}.puzzle-cell.germ{border:2px solid var(--mint)}
+.cell-number{position:absolute;top:2px;left:5px;font-size:.6rem;color:#e8c4ae}.cell-mark{font-size:clamp(.85rem,2vw,1.2rem);font-weight:750;z-index:1}
+.cell-state{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:.57rem;color:#ffe8d5}.cell-port{color:var(--cyan)}
+.puzzle-cell svg{width:100%;height:100%;position:absolute;inset:0;pointer-events:none}.puzzle-cell svg path{stroke:#c5a88c;stroke-width:8;fill:none;stroke-linecap:round}.puzzle-cell.connected svg path{stroke:var(--mint)}
+.puzzle-tools{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.puzzle-tool,.puzzle-secondary{border:1px solid #875559;border-radius:7px;background:#382126;padding:8px 10px;cursor:pointer;font-size:.8rem}
+.puzzle-tool[aria-pressed=true]{border-color:var(--mint);background:#294033}.puzzle-tool:disabled,.puzzle-secondary:disabled{opacity:.45;cursor:not-allowed}
+.puzzle-status{display:flex;flex-wrap:wrap;gap:8px 16px;padding:10px 12px;background:#211518;border-radius:7px;font-size:.8rem;color:var(--amber)}
+.puzzle-legend{display:flex;flex-wrap:wrap;gap:6px 12px;color:var(--muted);font-size:.72rem;margin:12px 0}
+.puzzle-phases{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:16px;padding:0;list-style:none}
+.puzzle-phases li{border-bottom:3px solid #633e43;padding:7px 3px;color:var(--muted);font-size:.7rem;text-align:center}.puzzle-phases li.current{border-color:var(--amber);color:var(--amber)}.puzzle-phases li.done{border-color:var(--mint);color:var(--mint)}
+.puzzle-sidebar h2{font-size:1.1rem;margin:0 0 8px}.puzzle-sidebar p{font-size:.86rem;color:var(--muted)}
+.puzzle-preview{border:1px solid #78504c;border-radius:8px;padding:12px;margin:12px 0;font-size:.8rem;line-height:1.8}.puzzle-preview strong{color:var(--coral)}
+.puzzle-message{min-height:3em;color:var(--amber)!important}.puzzle-note{font-size:.72rem!important}.puzzle-secondary{margin-top:10px;width:100%}.recovery-status{color:var(--amber);font-size:.8rem;margin:8px 0}
+@media(max-width:760px){.invasion{grid-template-columns:1fr}.invasion-panel{padding:14px}.puzzle-board{gap:5px;max-width:430px}.cell-mark{font-size:1rem}.cell-state{font-size:.52rem}.puzzle-sidebar{margin-bottom:12px}}
